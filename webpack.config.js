@@ -2,7 +2,7 @@ const HTMLWebpackPlugin = require("html-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-  entry: "./src/App.js",
+  entry: ["@babel/polyfill", "./src/App.js"],
   module: {
     rules: [
       {
