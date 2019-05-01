@@ -4,7 +4,9 @@ import ReactDOM from "react-dom";
 import "./style.css";
 
 class App extends Component {
-  state = {};
+  state = {
+    search: ""
+  };
 
   componentDidMount() {
     this._getCountries();
@@ -31,6 +33,17 @@ class App extends Component {
 
     return (
       <div className={countries ? "App" : "App__loading"}>
+        <form>
+          <fieldset>
+            <legend>Search</legend>
+            <p>
+              <input type="text" aria-label="Search" onChange={this._handleChange} />
+              <input type="submit" value={this.state.search} />
+            </p>
+          </fieldset>
+        </form>
+
+        {this._renderInputs()}
         {!countries ? (
           "Loading"
         ) : (
@@ -41,7 +54,7 @@ class App extends Component {
                 <th>COUNTRY</th>
                 <th>CAPITAL</th>
                 <th>REGION</th>
-                <th>ISO CODES</th>
+                <th>ISO CODE</th>
               </tr>
             </thead>
             <tbody>{this._renderCountries()}</tbody>
@@ -51,12 +64,91 @@ class App extends Component {
     );
   }
 
+  _renderSearch = () => {
+    return
+  }
+
+  _renderInputs = () => {
+    return (
+      <form>
+        <fieldset>
+          <legend>Add country information</legend>
+          <p>
+            <label htmlFor="callingCodes">
+              <input
+                type="text"
+                placeholder="Country Code"
+                name="callingCodes"
+                onChange={this._handleChange}
+              />
+            </label>
+          </p>
+          <p>
+            <label htmlFor="name">
+              <input
+                type="text"
+                placeholder="Country"
+                name="name"
+                onChange={this._handleChange}
+              />
+              <strong>
+                <abbr title="required">*</abbr>
+              </strong>
+            </label>
+          </p>
+          <p>
+            <label htmlFor="capital">
+              <input
+                type="text"
+                placeholder="Capital"
+                name="capital"
+                onChange={this._handleChange}
+              />
+            </label>
+          </p>
+          <p>
+            <label htmlFor="region">
+              <input
+                type="text"
+                placeholder="Region"
+                name="region"
+                onChange={this._handleChange}
+              />
+            </label>
+          </p>
+          <p>
+            <label htmlFor="alpha2">
+              <input
+                type="text"
+                placeholder="ISO Code"
+                name="alpha2"
+                onChange={this._handleChange}
+              />
+            </label>
+          </p>
+          <input type="submit" value={this.state.search} />
+        </fieldset>
+      </form>
+    );
+  };
+
+  _handleChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
+
+  _checkInputChar = e => {
+    const inputChar = this.state.search;
+    console.log(inputChar);
+  };
+
   _renderCountries = () => {
     const countries = this.state.countries.map(country => {
       return (
         <CountryRow
           key={country.alpha2Code}
-          code={country.callingCodes[0]}
+          code={country.callingCodes.join(", ")}
           name={country.name}
           capital={country.capital}
           region={country.region}
