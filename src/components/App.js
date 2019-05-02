@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import { connect } from "react-redux";
+import { fetchCountriesIfNeeded } from "../actions/index";
 
 import "./style.css";
 
@@ -8,28 +9,34 @@ class App extends Component {
     search: ""
   };
 
+  // componentDidMount() {
+  //   this._getCountries();
+  // }
+
+  // _getCountries = async () => {
+  //   const countries = await this._callApi();
+  //   this.setState({
+  //     countries
+  //   });
+  // };
+
+  // _callApi = () => {
+  //   return fetch(
+  //     "https://restcountries.eu/rest/v2/all?fields=alpha2Code;capital;name;region;callingCodes"
+  //   )
+  //     .then(res => res.json())
+  //     .then(json => json)
+  //     .catch(err => console.log(err));
+  // };
+
   componentDidMount() {
-    this._getCountries();
+    const { dispatch, countries } = this.props;
+    dispatch(fetchCountriesIfNeeded(countries));
   }
 
-  _getCountries = async () => {
-    const countries = await this._callApi();
-    this.setState({
-      countries
-    });
-  };
-
-  _callApi = () => {
-    return fetch(
-      "https://restcountries.eu/rest/v2/all?fields=alpha2Code;capital;name;region;callingCodes"
-    )
-      .then(res => res.json())
-      .then(json => json)
-      .catch(err => console.log(err));
-  };
-
   render() {
-    const { countries } = this.state;
+    const { countries, isFetching } = this.props;
+    console.log(countries, isFetching);
 
     return (
       <div className={countries ? "App" : "App__loading"}>
@@ -37,14 +44,17 @@ class App extends Component {
           <fieldset>
             <legend>Search</legend>
             <p>
-              <input type="text" aria-label="Search" onChange={this._handleChange} />
+              <input
+                type="text"
+                aria-label="Search"
+                onChange={this._handleChange}
+              />
               <input type="submit" value={this.state.search} />
             </p>
           </fieldset>
         </form>
-
         {this._renderInputs()}
-        {!countries ? (
+        {isFetching && posts.length === 0 ? (
           "Loading"
         ) : (
           <table>
@@ -57,15 +67,11 @@ class App extends Component {
                 <th>ISO CODE</th>
               </tr>
             </thead>
-            <tbody>{this._renderCountries()}</tbody>
+            <tbody>{this._renderCountries(countries)}</tbody>
           </table>
         )}
       </div>
     );
-  }
-
-  _renderSearch = () => {
-    return
   }
 
   _renderInputs = () => {
@@ -143,8 +149,8 @@ class App extends Component {
     console.log(inputChar);
   };
 
-  _renderCountries = () => {
-    const countries = this.state.countries.map(country => {
+  _renderCountries = countries => {
+    const countryRows = countries.map(country => {
       return (
         <CountryRow
           key={country.alpha2Code}
@@ -157,7 +163,7 @@ class App extends Component {
       );
     });
 
-    return countries;
+    return countryRows;
   };
 }
 
@@ -174,5 +180,3 @@ const CountryRow = ({ code, name, capital, region, alpha2 }) => {
 };
 
 export default App;
-
-ReactDOM.render(<App />, document.getElementById("root"));
